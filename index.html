@@ -12,35 +12,132 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 40px 20px;
+      background: #f5f7fa;
+      padding: 30px 20px;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 420px;
+      margin: auto;
+      background: white;
+      padding: 30px 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
     }
 
     h1 {
-      margin-bottom: 30px;
+      text-align: center;
+      margin-bottom: 10px;
     }
 
-    #result {
-      margin-top: 30px;
-      padding: 20px;
-      background: #f5f5f5;
-      border-radius: 12px;
+    .success {
+      text-align: center;
+      color: #198754;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-top: 18px;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 25px;
+      padding: 14px;
+      font-size: 17px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      background: #06c755;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:active {
+      opacity: 0.8;
+    }
+
+    #message {
+      text-align: center;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    .userid {
+      background: #f1f1f1;
+      padding: 10px;
+      border-radius: 8px;
       word-break: break-all;
+      font-size: 13px;
+      margin-top: 10px;
     }
   </style>
 </head>
 
 <body>
 
-  <h1>💊 領藥通知綁定</h1>
+  <div class="container">
 
-  <p id="status">正在辨識您的 LINE 帳號……</p>
+    <h1>💊 領藥通知綁定</h1>
 
-  <div id="result"></div>
+    <div class="success">
+      LINE 已成功辨識
+    </div>
+
+    <div>
+      您的 LINE User ID：
+    </div>
+
+    <div class="userid" id="userId">
+      辨識中……
+    </div>
+
+    <label for="name">
+      姓名
+    </label>
+
+    <input
+      type="text"
+      id="name"
+      placeholder="請輸入您的姓名"
+    >
+
+    <label for="idPrefix">
+      身分證字號前幾碼
+    </label>
+
+    <input
+      type="text"
+      id="idPrefix"
+      placeholder="請輸入身分證前幾碼"
+    >
+
+    <button onclick="confirmBinding()">
+      確認綁定
+    </button>
+
+    <div id="message"></div>
+
+  </div>
 
   <script>
 
     const LIFF_ID = "2011684298-YNeB7VcL";
+
+    let userId = "";
 
     async function main() {
 
@@ -57,28 +154,59 @@
 
         const profile = await liff.getProfile();
 
-        document.getElementById("status").innerText =
-          "LINE 已成功辨識！";
+        userId = profile.userId;
 
-        document.getElementById("result").innerHTML =
-          "<strong>您的 LINE User ID</strong><br><br>" +
-          profile.userId;
-
-        console.log("LINE User ID:", profile.userId);
+        document.getElementById("userId").innerText = userId;
 
       } catch (error) {
 
-        document.getElementById("status").innerText =
-          "辨識失敗";
-
-        document.getElementById("result").innerText =
-          error;
+        document.getElementById("userId").innerText =
+          "LINE 辨識失敗";
 
         console.error(error);
 
       }
 
     }
+
+
+    function confirmBinding() {
+
+      const name =
+        document.getElementById("name").value.trim();
+
+      const idPrefix =
+        document.getElementById("idPrefix").value.trim();
+
+      const message =
+        document.getElementById("message");
+
+
+      if (!name) {
+
+        message.innerText = "請輸入姓名";
+
+        return;
+      }
+
+
+      if (!idPrefix) {
+
+        message.innerText = "請輸入身分證前幾碼";
+
+        return;
+      }
+
+
+      message.innerText =
+        "✅ 綁定資料已送出！";
+
+      console.log("姓名：", name);
+      console.log("身分證前幾碼：", idPrefix);
+      console.log("LINE User ID：", userId);
+
+    }
+
 
     main();
 
